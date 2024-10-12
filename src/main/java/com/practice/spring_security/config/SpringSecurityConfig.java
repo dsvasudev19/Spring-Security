@@ -11,27 +11,33 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.practice.spring_security.service.CustomUserDetailsService;
+import com.practice.spring_service.filters.JwtFilter;
+
+
 
 @Configuration
 @EnableWebSecurity
 public class SpringSecurityConfig {
-	
+
 	@Autowired
 	private CustomUserDetailsService userDetailsService;
-	
-	
+
+	@Autowired
+	JwtFilter jwtFilter;
+
 	@Bean
 	public SecurityFilterChain securityFilterChaing(HttpSecurity http) throws Exception {
+
 		http.csrf(customizer -> customizer.disable())
 				.authorizeHttpRequests((req) -> req.requestMatchers("/users/**", "/swagger-ui/**", "/h2-console/**")
 						.permitAll().anyRequest().authenticated())
-				.formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults());
+				.formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults())
+				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
-	
-	
 
 	@Bean
 	public AuthenticationProvider authenticationProvider() {
