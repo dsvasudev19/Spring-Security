@@ -1,5 +1,4 @@
 
-# Build using Maven 
 FROM maven AS build 
 
 COPY . .
